@@ -12,3 +12,4 @@ app.include_router(users.router)
 @app.get("/")
 def root():
     return {"message": "SkillHub API Running Successfully "}
+

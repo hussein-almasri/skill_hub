@@ -1,5 +1,10 @@
 from pydantic import BaseModel, EmailStr
+from typing import Optional
 
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    role: Optional[str] = None
 class UserCreate(BaseModel):
     username: str
     email: EmailStr
