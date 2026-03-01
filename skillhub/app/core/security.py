@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models.user import User
 
-
 SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
@@ -60,7 +59,6 @@ def get_current_user(
         raise credentials_exception
 
     return user
-
 
 def get_admin_user(current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":
