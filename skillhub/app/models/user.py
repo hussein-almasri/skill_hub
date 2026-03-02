@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from app.database import Base
 
 class User(Base):
@@ -11,3 +12,6 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     role = Column(String, default="user")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    points = Column(Integer, default=0)
+
+    challenges = relationship("Challenge", backref="owner")

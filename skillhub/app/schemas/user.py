@@ -9,7 +9,7 @@ class UserCreate(BaseModel):
     username: str
     email: EmailStr
     password: str
-
+    points: int 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
