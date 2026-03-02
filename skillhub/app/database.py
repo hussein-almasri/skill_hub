@@ -15,3 +15,11 @@ SessionLocal = sessionmaker(
 )
 
 Base = declarative_base()
+
+# ✅ get_db واحدة فقط
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

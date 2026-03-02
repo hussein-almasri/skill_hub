@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
+from app.database import get_db
 from app.models.user import User
 
 SECRET_KEY = "supersecretkey"
@@ -27,12 +27,6 @@ def create_access_token(data: dict):
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 def get_current_user(
     token: str = Depends(oauth2_scheme),
@@ -59,6 +53,7 @@ def get_current_user(
         raise credentials_exception
 
     return user
+
 
 def get_admin_user(current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":

@@ -1,27 +1,24 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
+from app.database import get_db
 from app.models.submission import Submission
 from app.models.challenge import Challenge
 from app.models.user import User
 from app.schemas.submission import SubmissionCreate, SubmissionResponse
-from app.routes.users import get_current_user
+from app.core.security import get_current_user
 
 router = APIRouter(prefix="/submissions", tags=["Submissions"])
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.post("/", response_model=SubmissionResponse)
 def submit_flag(
     data: SubmissionCreate,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
+    # نعيد جلب المستخدم من نفس الـ session
+    user = db.query(User).filter(User.id == current_user.id).first()
+
     challenge = db.query(Challenge).filter(
         Challenge.id == data.challenge_id
     ).first()
@@ -29,7 +26,6 @@ def submit_flag(
     if not challenge:
         raise HTTPException(status_code=404, detail="Challenge not found")
 
-    # Already solved?
     existing = db.query(Submission).filter(
         Submission.user_id == user.id,
         Submission.challenge_id == data.challenge_id,
