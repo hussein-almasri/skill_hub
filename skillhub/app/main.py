@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from app.database import Base, engine
-from app.routes import auth, users, challenges, submissions, hints, leaderboard
+from .database import Base, engine
+from .routes import auth, users, challenges, submissions, hints, leaderboard
 
 app = FastAPI()
 
