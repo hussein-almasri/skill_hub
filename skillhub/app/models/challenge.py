@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.sql import func
-from app.database import Base
 from sqlalchemy.orm import relationship
+from app.database import Base
+
 
 class Challenge(Base):
     __tablename__ = "challenges"
@@ -12,8 +13,12 @@ class Challenge(Base):
     difficulty = Column(String)
     points = Column(Integer)
     category = Column(String)
-    flag = Column(String, nullable=False)   
+    flag = Column(String, nullable=False)
     status = Column(String, default="active")
 
     created_by = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    solved_count = Column(Integer, default=0)
+
+    hints = relationship("Hint", backref="challenge")

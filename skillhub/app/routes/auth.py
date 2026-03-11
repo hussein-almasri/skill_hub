@@ -18,7 +18,6 @@ def get_db():
         db.close()
 
 
-# 🔹 Register
 @router.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
 
@@ -47,14 +46,12 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     return {"message": "User created successfully"}
 
 
-# 🔹 Login (OAuth2 Compatible)
 @router.post("/login")
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
 
-    # ⚠ Swagger username field = email
     db_user = db.query(User).filter(User.email == form_data.username).first()
 
     if not db_user or not verify_password(form_data.password, db_user.password_hash):

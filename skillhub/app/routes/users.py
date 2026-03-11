@@ -3,16 +3,49 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.database import get_db
 from app.models.user import User
-from app.schemas.user import UserResponse, UserUpdate
+from app.models.submission import Submission
+from app.schemas.user import UserResponse, UserUpdate, UserStats
 from app.core.security import get_current_user, get_admin_user
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+@router.get("/stats", response_model=UserStats)
+def get_user_stats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    solved = db.query(Submission).filter(
+        Submission.user_id == current_user.id,
+        Submission.is_correct == True
+    ).count()
+
+    return {
+        "username": current_user.username,
+        "email": current_user.email,
+        "points": current_user.points,
+        "solved_challenges": solved
+    }
+
+
+@router.get("/solved-challenges")
+def get_solved_challenges(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    solved = db.query(Submission.challenge_id).filter(
+        Submission.user_id == current_user.id,
+        Submission.is_correct == True
+    ).all()
+
+    return [s.challenge_id for s in solved]
 
 
 @router.get("/", response_model=list[UserResponse])

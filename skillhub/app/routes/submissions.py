@@ -1,55 +1,67 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.models.submission import Submission
+
+from app.database import SessionLocal
 from app.models.challenge import Challenge
+from app.models.submission import Submission
 from app.models.user import User
-from app.schemas.submission import SubmissionCreate, SubmissionResponse
+
+from app.schemas.submission import SubmissionCreate
 from app.core.security import get_current_user
 
 router = APIRouter(prefix="/submissions", tags=["Submissions"])
 
 
-@router.post("/", response_model=SubmissionResponse)
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+@router.post("/")
 def submit_flag(
-    data: SubmissionCreate,
+    submission: SubmissionCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    # نعيد جلب المستخدم من نفس الـ session
+
     user = db.query(User).filter(User.id == current_user.id).first()
 
     challenge = db.query(Challenge).filter(
-        Challenge.id == data.challenge_id
+        Challenge.id == submission.challenge_id
     ).first()
 
     if not challenge:
         raise HTTPException(status_code=404, detail="Challenge not found")
 
-    existing = db.query(Submission).filter(
-        Submission.user_id == user.id,
-        Submission.challenge_id == data.challenge_id,
-        Submission.is_correct == True
-    ).first()
 
-    if existing:
-        raise HTTPException(status_code=400, detail="Already solved")
+    user_flag = submission.submitted_flag.strip().lower()
+    correct_flag = challenge.flag.strip().lower()
 
-    is_correct = data.submitted_flag == challenge.flag
+    print("USER FLAG:", user_flag)
+    print("DB FLAG:", correct_flag)
 
-    submission = Submission(
+    is_correct = user_flag == correct_flag
+
+    new_submission = Submission(
         user_id=user.id,
-        challenge_id=data.challenge_id,
-        submitted_flag=data.submitted_flag,
+        challenge_id=submission.challenge_id,
+        submitted_flag=submission.submitted_flag,
         is_correct=is_correct
     )
 
-    db.add(submission)
+    db.add(new_submission)
 
     if is_correct:
         user.points += challenge.points
+        challenge.solved_count += 1
 
     db.commit()
-    db.refresh(submission)
 
-    return submission
+    return {
+        "correct": is_correct,
+        "points": user.points,
+        "challenge_id": submission.challenge_id
+    }
