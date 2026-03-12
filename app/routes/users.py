@@ -117,3 +117,22 @@ def delete_user(
     db.commit()
 
     return {"message": "User deleted successfully"}
+
+
+@router.put("/make-admin/{user_id}")
+def make_admin(
+    user_id: int,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.role = "admin"
+
+    db.commit()
+    db.refresh(user)
+
+    return {"message": f"{user.username} is now admin"}
