@@ -2,12 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.database import SessionLocal
-from app.models.challenge import Challenge
-from app.models.user import User
-from app.models.submission import Submission
-from app.schemas.challenge import ChallengeCreate, ChallengeResponse, ChallengeUpdate
-from app.core.security import get_current_user, get_admin_user
+from ..database import SessionLocal
+from ..models.challenge import Challenge
+from ..models.user import User
+from ..models.submission import Submission
+from ..schemas.challenge import ChallengeCreate, ChallengeResponse, ChallengeUpdate
+from ..core.security import get_current_user, get_admin_user
 
 router = APIRouter(prefix="/challenges", tags=["Challenges"])
 

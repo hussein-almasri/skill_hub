@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.database import SessionLocal
-from app.models.hint import Hint
-from app.models.user import User
-from app.models.hint_unlock import HintUnlock
+from ..database import SessionLocal
+from ..models.hint import Hint
+from ..models.user import User
+from ..models.hint_unlock import HintUnlock
 
-from app.schemas.hint import HintCreate, HintResponse
-from app.core.security import get_admin_user, get_current_user
+from ..schemas.hint import HintCreate, HintResponse
+from ..core.security import get_admin_user, get_current_user
 
 router = APIRouter(prefix="/hints", tags=["Hints"])
 
@@ -99,7 +99,7 @@ def create_hint(
     challenge_id: int,
     hint: HintCreate,
     db: Session = Depends(get_db),
-    admin = Depends(get_admin_user)
+    admin=Depends(get_admin_user)
 ):
 
     new_hint = Hint(

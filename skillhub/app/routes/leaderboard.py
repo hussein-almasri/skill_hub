@@ -2,12 +2,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from app.database import SessionLocal
-from app.models.user import User
-from app.models.challenge import Challenge
-from app.models.submission import Submission
-from app.schemas.leaderboard import LeaderboardEntry
-
+from ..database import SessionLocal
+from ..models.user import User
+from ..models.challenge import Challenge
+from ..models.submission import Submission
+from ..schemas.leaderboard import LeaderboardEntry
 
 router = APIRouter(prefix="/leaderboard", tags=["Leaderboard"])
 

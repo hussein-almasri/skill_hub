@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.database import SessionLocal
-from app.models.challenge import Challenge
-from app.models.submission import Submission
-from app.models.user import User
+from ..database import SessionLocal
+from ..models.challenge import Challenge
+from ..models.submission import Submission
+from ..models.user import User
 
-from app.schemas.submission import SubmissionCreate
-from app.core.security import get_current_user
+from ..schemas.submission import SubmissionCreate
+from ..core.security import get_current_user
 
 router = APIRouter(prefix="/submissions", tags=["Submissions"])
 
@@ -35,7 +35,6 @@ def submit_flag(
 
     if not challenge:
         raise HTTPException(status_code=404, detail="Challenge not found")
-
 
     user_flag = submission.submitted_flag.strip().lower()
     correct_flag = challenge.flag.strip().lower()

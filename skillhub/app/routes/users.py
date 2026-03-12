@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from app.database import get_db
-from app.models.user import User
-from app.models.submission import Submission
-from app.schemas.user import UserResponse, UserUpdate, UserStats
-from app.core.security import get_current_user, get_admin_user
+
+from ..database import get_db
+from ..models.user import User
+from ..models.submission import Submission
+from ..schemas.user import UserResponse, UserUpdate, UserStats
+from ..core.security import get_current_user, get_admin_user
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
