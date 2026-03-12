@@ -57,11 +57,12 @@ def get_users(
     return db.query(User).all()
 
 
+# هذا التعديل المؤقت حتى تستطيع جعل نفسك Admin
 @router.put("/make-admin/{user_id}")
 def make_admin(
     user_id: int,
     db: Session = Depends(get_db),
-    admin: User = Depends(get_admin_user)
+    current_user: User = Depends(get_current_user)
 ):
     user = db.query(User).filter(User.id == user_id).first()
 
@@ -80,7 +81,7 @@ def make_admin(
 def get_user_by_id(
     user_id: int,
     db: Session = Depends(get_db),
-    admin: User = Depends(get_admin_user)
+    current_user: User = Depends(get_current_user)
 ):
     user = db.query(User).filter(User.id == user_id).first()
 
